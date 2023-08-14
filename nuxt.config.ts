@@ -5,11 +5,11 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'Medfest Care ',
+      title: 'CHATBOT PROJECT',
       meta: [
         {
           name: 'description',
-          content: 'Medfest care for health insurance',
+          content: 'chatbot',
         },
       ],
       link: [

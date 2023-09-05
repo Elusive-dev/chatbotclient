@@ -51,6 +51,7 @@ export const FETCH = async (route, method, body) => {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
+          'X-API-KEY': 'rhatjfjSGaIBvVXGFSuYPECZjekiXqhZjmsQpKGRikcoSGkBuU',
         },
         redirect: 'follow',
         referrerPolicy: 'no-referrer',

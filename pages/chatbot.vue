@@ -12,7 +12,13 @@
     {{ darkTheme ? 'Light' : 'Dark' }} Style
   </div>
   <div class="absolute top-1 z-10 left-1">
-    <q-btn @click="FireInput" round color="secondary" icon="cloud_upload" />
+    <q-btn
+      :loading="loading"
+      @click="FireInput"
+      round
+      color="secondary"
+      icon="cloud_upload"
+    />
     <input
       ref="fileinput"
       @change="UploadImage"
@@ -25,7 +31,7 @@
   </div>
 
   <div
-    class="absi rounded-md flex text-center justify-center items-center shadow-md w-[80%] px-10 py-5"
+    class="absi rounded-md flex flex-col text-center justify-center items-center shadow-md w-[80%] px-10 py-5"
   >
     <p class="font-bold text-2xl text-blue-500">Instruction!</p>
     <p>Click The chat icon to begin...</p>
@@ -53,11 +59,13 @@
 </template>
 
 <script>
+// import fetch from 'node-fetch';
 import { Chat } from '@chat-ui/vue3';
 export default {
   data: () => ({
     ready: false,
     file: null,
+    loading: false,
     datal: [
       {
         message: 'Click on the upload icon to upload files',
@@ -76,28 +84,46 @@ export default {
       console.log(input);
       input.click();
     },
-    UploadImage() {
-      const input = this.$refs.fileinput;
-      this.file = input.files[0];
-      if (this.file == null) {
-        ShowSnack('No File Selected!', 'negative');
-        return;
-      }
-      console.log(this.file);
-      const messagePerson = {
-        message: `${this.file.name} Uploaded`,
-        type: 'person',
-        timestamp: this.formatAMPM(new Date()),
-      };
-      this.datal.push(messagePerson);
-      setTimeout(async () => {
-        const messageChatbot = {
-          type: 'chatbot',
-          timestamp: this.formatAMPM(new Date()),
-          message: 'Processing File',
+    async UploadImage() {
+      try {
+        this.loading = true;
+        const input = this.$refs.fileinput;
+        this.file = input.files[0];
+        if (this.file == null) {
+          ShowSnack('No File Selected!', 'negative');
+          return;
+        }
+        let mm =  await this.Push(this.file);
+        let cdata = {
+          message: mm,
+          type: 'person',
+          timestamp: '3:45 PM',
         };
-        this.datal.push(messageChatbot);
-      }, this.getRandomNumber());
+        this.datal.push(cdata)       
+        this.loading = false;
+      } catch (err) {
+        this.loading = false;
+        console.log(err);
+      }
+    },
+    async Push(file) {
+      try {
+        const form = new FormData();
+        form.append('pdfFile', file);
+
+        const res = await fetch('https://pdfparse.onrender.com/extract-text', {
+          method: 'POST',
+          body: form,
+        });
+
+        const data = await res.text();
+        return data;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async dataURItoBlob(file) {
+      return new Blob(await file.arrayBuffer());
     },
     handleSendEvent(input) {
       if (input == '') return;

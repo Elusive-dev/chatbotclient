@@ -102,7 +102,7 @@ export default {
         });
         const newa = await res.json()
         let cdata = {
-          message: newa,
+          message: newa.results,
           type: 'person',
           timestamp: '3:45 PM',
         };

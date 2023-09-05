@@ -100,7 +100,7 @@ export default {
             document:`Bard recommend articles like link that talks about these ${mm}`
           }),
         });
-        const newa = await mm.json()
+        const newa = await res.json()
         let cdata = {
           message: newa,
           type: 'person',

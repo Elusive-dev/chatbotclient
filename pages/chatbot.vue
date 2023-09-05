@@ -103,7 +103,7 @@ export default {
         const newa = await res.json()
         let cdata = {
           message: newa.results,
-          type: 'person',
+          type: 'chatbot',
           timestamp: '3:45 PM',
         };
         this.datal.push(cdata)       

@@ -97,7 +97,7 @@ export default {
         const res = await fetch('/api/generate', {
           method: 'POST',
           body: JSON.stringify({
-            document:`Bard recommend articles like link that talks about these ${mm}`
+            document:`Bard recommend link to articles that talks about these ${mm}`
           }),
         });
         const newa = await res.json()

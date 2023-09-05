@@ -13,7 +13,7 @@ let __Secure_3PAPISID = '';
 let SIDCC = '';
 let __Secure_1PSIDCC = '';
 let __Secure_3PSIDCC = '';
-let cookies = `__Secure-1PSID=agjOCBKrjgPvZbliTXY4lCVplsB9jXOCCmJQM3JoXrEDoMUZ-_TKq_-hGMVABP5QhKCABQ.`;
+let cookies = `__Secure-1PSID=awjOCD1zV-yNb0NRrYGxhndkB4LVi6JlsvMKimcp-CyvLdxo45dTGpl4qzl_fl5EriMfqA.`;
 let bot = new Bard(cookies);
 
 export async function USEBARD(msg, phone = '') {

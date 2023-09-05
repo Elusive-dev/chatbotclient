@@ -93,9 +93,16 @@ export default {
           ShowSnack('No File Selected!', 'negative');
           return;
         }
-        let mm =  await this.Push(this.file);
+        let mm = await this.Push(this.file);
+        const res = await fetch('/api/generate', {
+          method: 'POST',
+          body: JSON.stringify({
+            document:`Bard recommend articles like link that talks about these ${mm}`
+          }),
+        });
+        const newa = await mm.json()
         let cdata = {
-          message: mm,
+          message: newa,
           type: 'person',
           timestamp: '3:45 PM',
         };

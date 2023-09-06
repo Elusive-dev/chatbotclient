@@ -12,12 +12,19 @@
     {{ darkTheme ? 'Light' : 'Dark' }} Style
   </div>
   <div class="absolute top-1 z-10 left-1">
-    <q-btn
+    <q-btn v-if="!ModiData.id"
       :loading="loading"
       @click="FireInput"
       round
       color="secondary"
       icon="cloud_upload"
+    />
+     <q-btn v-else
+      
+      @click="ModiData = {}"
+      round
+      color="red"
+      icon="close"
     />
     <input
       ref="fileinput"
@@ -31,6 +38,37 @@
   </div>
 
   <div
+    v-if="ModiData.id"
+    class="absi rounded-md flex flex-col text-center gap-3 shadow-md w-[80%] px-10 py-5"
+  >
+    <div v-if="loading" class="flex flex-col p-4 justify-center items-center">
+      <img width="100" src="@/assets/load.gif" alt="" />
+      <p>Processing Document</p>
+    </div>
+    <div class="flex flex-col gap-3" v-else>
+      <div
+        class="w-full flex justify-center items-center flex-wrap px-3 bg-gray-100 cardex shadow-md rounded-md"
+      >
+        <p class="font-bold text-lg underline">{{ ModiData.title }}</p>
+      </div>
+      <div
+        class="w-full flex flex-col text-center justify-center items-center flex-wrap px-3 bg-gray-100 cardex shadow-md rounded-md"
+      >
+        <p class="font-bold text-md underline">Summary</p>
+        <p class="font-semibold text-md">{{ ModiData.document }}</p>
+      </div>
+      <div
+        class="w-full flex flex-col text-center justify-center items-center flex-wrap px-3 bg-gray-100 cardex shadow-md rounded-md"
+      >
+        <p class="font-bold text-md underline">Related Articles</p>
+        
+        <p  v-for="(i ,index) in ModiData.lists.slice(0,4)" :key="index" class="font-semibold cursor-pointer bg-white p-3 rounded shadow-md mb-3 text-md">{{ i.title }}</p>
+        
+      </div>
+    </div>
+  </div>
+  <div
+    v-else
     class="absi rounded-md flex flex-col text-center justify-center items-center shadow-md w-[80%] px-10 py-5"
   >
     <p class="font-bold text-2xl text-blue-500">Instruction!</p>
@@ -67,6 +105,12 @@ export default {
     ready: false,
     file: null,
     loading: false,
+    ModiData: {
+      title: '',
+      document: '',
+      lists: [],
+      id: ''
+    },
     datal: [
       {
         message: 'Click on the upload icon to upload files',
@@ -86,6 +130,7 @@ export default {
     },
     async UploadImage() {
       try {
+        this.ModiData.id = Math.floor(Math.random() * 1000).toString();
         this.loading = true;
         const input = this.$refs.fileinput;
         this.file = input.files[0];
@@ -94,13 +139,20 @@ export default {
           return;
         }
         let mm = await this.Push(this.file);
-        const rep = await this.ChatGpt(mm.trim())
-        let redata = JSON.parse(rep)
-        let title = redata.title
-        let url = encodeURI(`https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${title}`)
-        console.log(url)
+        const rep = await this.ChatGpt(mm.trim());
+        let redata = JSON.parse(rep);
+        let title = redata.title || 'No title';
+        let url = encodeURI(
+          `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${title}`
+        );
+        const response = await axios(url);
+        console.log(response);
+        this.ModiData.title = title;
+        this.ModiData.document = redata.document;
+        this.ModiData.lists = response.data.resultList.result;
+        console.log(url);
         let cdata = {
-          message: redata.document,
+          message: redata.document || 'Not An Article',
           type: 'chatbot',
           timestamp: '3:45 PM',
         };
@@ -113,10 +165,12 @@ export default {
     },
     async ChatGpt(msg) {
       try {
-        const runtimeConfig = useRuntimeConfig()
-        console.log(runtimeConfig)
+        const runtimeConfig = useRuntimeConfig();
         let messages = [];
-        let message = { role: 'user', content: `Hello chatgpt  can you sumarize this article and highlight important points  "${msg}" in json format, i want the title seperated from the sumarized document eg {title: '', document: ''}` };
+        let message = {
+          role: 'user',
+          content: `Hello chatgpt  can you sumarize this article and highlight important points  "${msg}" in json format, i want the title seperated from the sumarized document eg {title: '', document: ''}`,
+        };
         messages.push(message);
         let body = {
           model: 'gpt-3.5-turbo-16k-0613',
@@ -136,7 +190,7 @@ export default {
         };
         const response = await axios(configs);
         let chres = response?.data?.choices[0]?.message.content;
-        return chres
+        return chres;
       } catch (err) {
         console.log(err);
       }
@@ -214,5 +268,8 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   background: white;
+  max-height: 80vh;
+  overflow: hidden;
+  overflow-y: scroll;
 }
 </style>

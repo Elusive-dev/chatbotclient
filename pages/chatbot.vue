@@ -34,7 +34,7 @@
 
   <div
     v-if="ModiData.id"
-    class="absi rounded-md flex flex-col text-center gap-3 shadow-md w-[80%] px-10 py-5"
+    class="absi rounded-md flex flex-col text-center gap-3 shadow-md w-[90%] px-10 py-5"
   >
     <div v-if="loading" class="flex flex-col p-4 justify-center items-center">
       <img width="100" src="@/assets/load.gif" alt="" />

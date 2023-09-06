@@ -57,13 +57,18 @@
       >
         <p class="font-bold text-md underline">Related Articles</p>
 
-        <p
+        <div
+          @click="GetUrl(i.id, i.source, index)"
           v-for="(i, index) in ModiData.lists.slice(0, 4)"
           :key="index"
           class="font-semibold cursor-pointer bg-white p-3 rounded shadow-md mb-3 text-md"
         >
-          {{ i.title }}
-        </p>
+          <p>{{ i.title }}</p>
+          <q-btn @click="MyLinks(index)" size="8px">View Links</q-btn>
+          <div class="flex flex-wrap justify-center items-center gap-3">
+            <a class="underline text-xs text-blue" v-for="(i, n) in linkBox.find((v)=> v.id == index)?.links || [] " :key="n" :href="i.url">Link{{n}}</a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -105,6 +110,7 @@ export default {
     ready: false,
     file: null,
     loading: false,
+    linkBox: [],
     ModiData: {
       title: '',
       document: '',
@@ -214,14 +220,14 @@ export default {
       return new Blob(await file.arrayBuffer());
     },
     async handleSendEvent(input) {
-      this.loading = true
+      this.loading = true;
       if (input == '') return;
       const messagePerson = {
         type: 'person',
         timestamp: this.formatAMPM(new Date()),
         message: input,
       };
-        this.ModiData.id = Math.floor(Math.random() * 1000).toString();
+      this.ModiData.id = Math.floor(Math.random() * 1000).toString();
       this.datal.push(messagePerson);
       let adata = {
         message: 'Processing....',
@@ -242,7 +248,7 @@ export default {
       let cdata = {
         message: redata.document || 'Not An Article',
         type: 'chatbot',
-        timestamp:  this.formatAMPM(new Date()),
+        timestamp: this.formatAMPM(new Date()),
       };
       this.datal.push(cdata);
       this.loading = false;
@@ -251,7 +257,13 @@ export default {
     getRandomNumber() {
       return Math.floor(Math.random() * (2000 - 1000 + 1)) + 1000;
     },
-
+    MyLinks(id) {
+      let temp = this.linkBox.find((v) => v.id == id) || {};
+      if (temp.id) {
+        return temp;
+      }
+      return { id: '', links: [] };
+    },
     formatAMPM(date) {
       var hours = date.getHours();
       var minutes = date.getMinutes();
@@ -262,10 +274,24 @@ export default {
       var strTime = hours + ':' + minutes + ' ' + ampm;
       return strTime;
     },
+    async GetUrl(id, source, index) {
+      try {
+        let url = encodeURI(
+          `https://www.ebi.ac.uk/europepmc/webservices/rest/article/${source}/${id}?resultType=core&format=json`
+        );
+        const response = await axios(url);
+        console.log(response.data);
+        let links = response?.data?.result?.fullTextUrlList?.fullTextUrl || [];
+        this.linkBox.push({ id: index, links: links });
+      } catch (err) {
+        console.log(err);
+      }
+    },
   },
   mounted() {
     this.ready = true;
   },
+  computed: {},
 };
 </script>
 

@@ -214,6 +214,7 @@ export default {
       return new Blob(await file.arrayBuffer());
     },
     async handleSendEvent(input) {
+      this.loading = true
       if (input == '') return;
       const messagePerson = {
         type: 'person',

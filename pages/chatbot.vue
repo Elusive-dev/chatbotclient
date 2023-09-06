@@ -59,7 +59,8 @@
 </template>
 
 <script>
-// import fetch from 'node-fetch';
+// import fetch from 'node-fetch';\
+import axios from 'axios';
 import { Chat } from '@chat-ui/vue3';
 export default {
   data: () => ({
@@ -81,7 +82,6 @@ export default {
   methods: {
     FireInput() {
       const input = this.$refs.fileinput;
-      console.log(input);
       input.click();
     },
     async UploadImage() {
@@ -94,22 +94,46 @@ export default {
           return;
         }
         let mm = await this.Push(this.file);
-        const res = await fetch('/api/generate', {
-          method: 'POST',
-          body: JSON.stringify({
-            document:`Bard recommend link to articles that talks about these ${mm}`
-          }),
-        });
-        const newa = await res.json()
+        const rep = await this.ChatGpt(mm.trim())
+        
         let cdata = {
-          message: newa.results,
+          message: rep,
           type: 'chatbot',
           timestamp: '3:45 PM',
         };
-        this.datal.push(cdata)       
+        this.datal.push(cdata);
         this.loading = false;
       } catch (err) {
         this.loading = false;
+        console.log(err);
+      }
+    },
+    async ChatGpt(msg) {
+      
+      try {
+        let messages = [];
+        let message = { role: 'user', content: `Hello chatgpt  can you sumarize this article and highlight important points  "${msg}"` };
+        messages.push(message);
+        let body = {
+          model: 'gpt-3.5-turbo-16k-0613',
+          messages: messages,
+          temperature: 0.7,
+        };
+        var configs = {
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: 'https://api.openai.com/v1/chat/completions',
+          headers: {
+            Authorization: `Bearer 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`,
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          data: JSON.stringify(body),
+        };
+        const response = await axios(configs);
+        let chres = response?.data?.choices[0]?.message.content;
+        return chres
+      } catch (err) {
         console.log(err);
       }
     },
@@ -117,14 +141,13 @@ export default {
       try {
         const form = new FormData();
         form.append('pdfFile', file);
-
         const res = await fetch('https://pdfparse.onrender.com/extract-text', {
           method: 'POST',
           body: form,
         });
-
         const data = await res.text();
-        return data;
+        const trimedtext = await data.trim();
+        return trimedtext;
       } catch (error) {
         console.log(error);
       }

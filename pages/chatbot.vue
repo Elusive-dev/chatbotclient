@@ -12,20 +12,15 @@
     {{ darkTheme ? 'Light' : 'Dark' }} Style
   </div>
   <div class="absolute top-1 z-10 left-1">
-    <q-btn v-if="!ModiData.id"
+    <q-btn
+      v-if="!ModiData.id"
       :loading="loading"
       @click="FireInput"
       round
       color="secondary"
       icon="cloud_upload"
     />
-     <q-btn v-else
-      
-      @click="ModiData = {}"
-      round
-      color="red"
-      icon="close"
-    />
+    <q-btn v-else @click="ModiData = {}" round color="red" icon="close" />
     <input
       ref="fileinput"
       @change="UploadImage"
@@ -61,9 +56,14 @@
         class="w-full flex flex-col text-center justify-center items-center flex-wrap px-3 bg-gray-100 cardex shadow-md rounded-md"
       >
         <p class="font-bold text-md underline">Related Articles</p>
-        
-        <p  v-for="(i ,index) in ModiData.lists.slice(0,4)" :key="index" class="font-semibold cursor-pointer bg-white p-3 rounded shadow-md mb-3 text-md">{{ i.title }}</p>
-        
+
+        <p
+          v-for="(i, index) in ModiData.lists.slice(0, 4)"
+          :key="index"
+          class="font-semibold cursor-pointer bg-white p-3 rounded shadow-md mb-3 text-md"
+        >
+          {{ i.title }}
+        </p>
       </div>
     </div>
   </div>
@@ -109,7 +109,7 @@ export default {
       title: '',
       document: '',
       lists: [],
-      id: ''
+      id: '',
     },
     datal: [
       {
@@ -213,25 +213,38 @@ export default {
     async dataURItoBlob(file) {
       return new Blob(await file.arrayBuffer());
     },
-    handleSendEvent(input) {
+    async handleSendEvent(input) {
       if (input == '') return;
       const messagePerson = {
         type: 'person',
         timestamp: this.formatAMPM(new Date()),
         message: input,
       };
+        this.ModiData.id = Math.floor(Math.random() * 1000).toString();
       this.datal.push(messagePerson);
-
-      setTimeout(async () => {
-        const response = await fetch('https://www.boredapi.com/api/activity');
-        const res = await response.json();
-        const messageChatbot = {
-          type: 'chatbot',
-          timestamp: this.formatAMPM(new Date()),
-          message: res.activity,
-        };
-        this.datal.push(messageChatbot);
-      }, this.getRandomNumber());
+      let adata = {
+        message: 'Processing....',
+        type: 'chatbot',
+        timestamp: this.formatAMPM(new Date()),
+      };
+      this.datal.push(adata);
+      const rep = await this.ChatGpt(input.trim());
+      let redata = JSON.parse(rep);
+      let title = redata.title || 'No title';
+      let url = encodeURI(
+        `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${title}`
+      );
+      const response = await axios(url);
+      this.ModiData.title = title;
+      this.ModiData.document = redata.document;
+      this.ModiData.lists = response.data.resultList.result;
+      let cdata = {
+        message: redata.document || 'Not An Article',
+        type: 'chatbot',
+        timestamp:  this.formatAMPM(new Date()),
+      };
+      this.datal.push(cdata);
+      this.loading = false;
     },
 
     getRandomNumber() {

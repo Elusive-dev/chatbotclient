@@ -114,6 +114,7 @@ export default {
     async ChatGpt(msg) {
       try {
         const runtimeConfig = useRuntimeConfig()
+        console.log(runtimeConfig)
         let messages = [];
         let message = { role: 'user', content: `Hello chatgpt  can you sumarize this article and highlight important points  "${msg}" in json format, i want the title seperated from the sumarized document eg {title: '', document: ''}` };
         messages.push(message);

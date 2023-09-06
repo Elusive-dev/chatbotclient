@@ -53,6 +53,9 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
+    public: {
+      GPT_KEY: process.env.GPT_KEY,
+    },
   },
   modules: [
     '@pinia/nuxt',

@@ -95,9 +95,12 @@ export default {
         }
         let mm = await this.Push(this.file);
         const rep = await this.ChatGpt(mm.trim())
-        
+        let redata = JSON.parse(rep)
+        let title = redata.title
+        let url = encodeURI(`https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${title}`)
+        console.log(url)
         let cdata = {
-          message: rep,
+          message: redata.document,
           type: 'chatbot',
           timestamp: '3:45 PM',
         };
@@ -109,10 +112,10 @@ export default {
       }
     },
     async ChatGpt(msg) {
-      
       try {
+        const runtimeConfig = useRuntimeConfig()
         let messages = [];
-        let message = { role: 'user', content: `Hello chatgpt  can you sumarize this article and highlight important points  "${msg}"` };
+        let message = { role: 'user', content: `Hello chatgpt  can you sumarize this article and highlight important points  "${msg}" in json format, i want the title seperated from the sumarized document eg {title: '', document: ''}` };
         messages.push(message);
         let body = {
           model: 'gpt-3.5-turbo-16k-0613',
@@ -124,7 +127,7 @@ export default {
           maxBodyLength: Infinity,
           url: 'https://api.openai.com/v1/chat/completions',
           headers: {
-            Authorization: `Bearer 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`,
+            Authorization: `Bearer ${runtimeConfig.public.GPT_KEY}`,
             Accept: 'application/json',
             'Content-Type': 'application/json',
           },

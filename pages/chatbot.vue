@@ -66,7 +66,7 @@
           <p class="my-2">{{ i.title }}</p>
           <q-btn @click="MyLinks(index)" size="8px">View Links</q-btn>
           <div class="flex flex-wrap mt-2 justify-center items-center gap-3">
-            <a class="underline text-xs text-blue" v-for="(i, n) in linkBox.find((v)=> v.id == index)?.links || [] " :key="n" :href="i.url">Link{{n+1}}</a>
+            <a target="_blank" class="underline text-xs text-blue" v-for="(i, n) in linkBox.find((v)=> v.id == index)?.links || [] " :key="n" :href="i.url">Link{{n+1}}</a>
           </div>
         </div>
       </div>

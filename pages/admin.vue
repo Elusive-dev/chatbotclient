@@ -10,7 +10,7 @@
         >Login</q-btn
       >
     </div>
-    <div v-else class="flex w-full flex-col justify-start items-center text-center">
+    <div v-else class="flex w-full overflow-hidden flex-col justify-start items-center text-center">
       <p class="text-2xl text-center font-bold underline">Admin Dashboard</p>
 
       <p class="text-left text-lg font-bold">All Users</p>
@@ -63,7 +63,7 @@
 <script>
 export default {
   data: () => ({
-    login: false,
+    login: true,
     email: '',
     password: '',
     users: [],

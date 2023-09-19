@@ -7,10 +7,8 @@
         >
           Smart Document Chatbot
         </h2>
-        <p class="mt-6 text-lg text-gray-900">
-          Project Defence <br />
-          Matric No: XXXXXXXXXX
-        </p>
+       
+        
         <p>
           Welcome to our Smart Document Chatbot, designed to make your document
           creation process faster, easier, and more efficient than ever before.

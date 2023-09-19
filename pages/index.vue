@@ -10,11 +10,7 @@
        
         
         <p>
-          Welcome to our Smart Document Chatbot, designed to make your document
-          creation process faster, easier, and more efficient than ever before.
-          Whether you're drafting a business proposal, writing a research paper,
-          or composing a heartfelt letter, our intelligent chatbot is here to
-          assist you every step of the way.
+         Welcome to our Smart Document Chatbot, designed to summarize your document creation process faster, easier, and more efficient than ever before and also provide related article.
         </p>
         <q-btn
           v-if="activeUser"

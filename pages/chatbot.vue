@@ -291,6 +291,11 @@ export default {
   mounted() {
     this.ready = true;
   },
+  setup() {
+    definePageMeta({
+      layout: 'auth',
+    });
+  },
   computed: {},
 };
 </script>

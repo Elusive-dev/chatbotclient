@@ -12,7 +12,7 @@ export default {
     let userData = JSON.parse(localStorage.getItem('userData')) || {}
     if (!userData.id) {
       this.$router.push({ path: '/' })
-      ShowSnack('User not authenticated', 'negaitve')
+      ShowSnack('User not authenticated', 'negative')
     }
   }
 }
